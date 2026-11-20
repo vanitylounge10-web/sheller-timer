@@ -1,0 +1,19 @@
+name: sheller-sync-pull
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call the Sheller sync-pull endpoint
+        run: |
+          code=$(curl -sS -o /tmp/resp.json -w "%{http_code}" -X POST "https://sheller.pages.dev/sync-pull" -H "X-Sheller-Secret: ${{ secrets.SHELLER_SYNC_SECRET }}")
+          echo "sync-pull HTTP status: ${code}"
+          echo "response body:"
+          cat /tmp/resp.json || true
+          echo
+          echo "call completed at $(date -u +%Y-%m-%dT%H:%M:%SZ)"
